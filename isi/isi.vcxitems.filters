@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)const_math.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)noise.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)macros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)primitives.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)matrix.h" />
+  </ItemGroup>
+</Project>

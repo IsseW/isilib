@@ -788,7 +788,13 @@ struct quaternion {
 	constexpr static quaternion<t> from_euler(const vec<3, t>& other) {
 		return from_euler(other._x(), other._y(), other._z());
 	}
-
+	/// <summary>
+	/// Create quaternion from euler
+	/// </summary>
+	/// <param name="yaw"></param>
+	/// <param name="pitch"></param>
+	/// <param name="roll"></param>
+	/// <returns></returns>
 	constexpr static quaternion<t> from_euler(const t& yaw, const t& pitch, const t& roll) {
 		t cy = cos(yaw / t{ 2 });
 		t sy = sin(yaw / t{ 2 });
@@ -802,7 +808,10 @@ struct quaternion {
 			cr * cp * sy + sr * sp * cy,
 			cr * cp * cy - sr * sp * sy);
 	}
-
+	/// <summary>
+	/// Create euler vector from this quaternion
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<3, t> to_euler() {
 		vec<3, t> result;
 		t t0, t1;
@@ -821,7 +830,11 @@ struct quaternion {
 
 		return result;
 	}
-
+	/// <summary>
+	/// Multiply quaternions
+	/// </summary>
+	/// <param name="o"></param>
+	/// <returns></returns>
 	constexpr quaternion<t> operator*(const quaternion<t>& o) const {
 		return quaternion(w * o.x + x * o.w + y * o.z - z * o.y, // X
 			w * o.y - x * o.z + y * o.w + z * o.x, // Y 
@@ -837,10 +850,15 @@ struct quaternion {
 		w = w * o.w - x * o.x - y * o.y - z * o.z;
 		return *this;
 	}
-
+	/// <summary>
+	/// "Scale" quaternion
+	/// </summary>
+	/// <param name="o"></param>
+	/// <returns></returns>
 	constexpr quaternion<t> operator*(const t& o) const {
 		return quaternion(x * o, y * o, z * o, w * o);
 	}
+
 	constexpr quaternion<t>& operator*=(const t& o) const {
 		x *= o;
 		y *= o;
@@ -848,7 +866,11 @@ struct quaternion {
 		w *= o;
 		return *this;
 	}
-
+	/// <summary>
+	/// Rotate vector by this quaternion
+	/// </summary>
+	/// <param name="u"></param>
+	/// <returns></returns>
 	constexpr vec<3, t> operator*(const vec<3, t>& u) const {
 
 		// vec<3, t> v(x, y, z);
@@ -856,22 +878,41 @@ struct quaternion {
 		quaternion<t> result = (*this * v) * conjugate();
 		return { result.x, result.y, result.z }; //u * (t{ 2.0 } * dot(u, v)) + v * (w * w - dot(u, u)) + u.cross(vec) * (t{ 2.0 } * w);
 	}
-
+	/// <summary>
+	/// Get a vector for right in this current rotation.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<3, t> right() const {
 		return vec<3, t>(x * t{ 2.0 } + x * (w * w - 1), y * (w * w - 1) - z * w * t{ 2.0 }, z * (w * w - 1) + y * w * t{ 2.0 });
 	}
+	/// <summary>
+	/// Get a vector for up in this current rotation.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<3, t> up() const {
 		return vec<3, t>(x * (w * w - 1) + z * w * t{ 2.0 }, y * (w * w - 1) + y * t{ 2.0 }, z * (w * w - 1) - x * w * t{ 2.0 });
 	}
 
+	/// <summary>
+	/// Get a vector for forward in this current rotation.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<3, t> forward() const {
 		return vec<3, t>(x * (w * w - 1) - y * t{ 2.0 } *w, y * (w * w - 1) + x * t{ 2.0 } *w, z * (w * w - 1) + z * t{ 2.0 });
 	}
-
+	/// <summary>
+	/// Get the conjugate to this quaternion.
+	/// </summary>
+	/// <returns></returns>
 	constexpr quaternion<t> conjugate() const {
 		return quaternion(-x, -y, -z, w);
 	}
-
+	/// <summary>
+	/// Print this quaternion.
+	/// </summary>
+	/// <param name="os"></param>
+	/// <param name="q"></param>
+	/// <returns></returns>
 	friend std::ostream& operator<<(std::ostream& os, const quaternion<t>& q) {
 		os << '<' << q.x << ", " << q.y << ", " << q.z << ", " << q.w << '>';
 		return os;
@@ -880,6 +921,13 @@ struct quaternion {
 
 using quat = quaternion<>;
 
+/// <summary>
+/// Reflect a vector on a perfect mirror.
+/// </summary>
+/// <typeparam name="t"></typeparam>
+/// <param name="d">The incoming direction</param>
+/// <param name="n">Normal of surface</param>
+/// <returns>Reflected vector</returns>
 template<size_t l, class t>
 constexpr vec<l, t> reflect(const vec<l, t>& d, const vec<l, t>& n) {
 	return d - n * 2 * dot(d, n);

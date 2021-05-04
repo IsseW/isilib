@@ -128,6 +128,11 @@ struct vec : _vector {
 private:
 	t e[l];
 
+	/// <summary>
+	/// Create a vector with all of one element.
+	/// </summary>
+	/// <param name="val"></param>
+	/// <returns></returns>
 	static constexpr vec<l, t> allof(const t& val) {
 		vec<l, t> r;
 		for (size_t i = 0; i < l; i++)
@@ -138,23 +143,40 @@ private:
 	}
 
 public:
+	/// <summary>
+	/// A vector with only 0s
+	/// </summary>
+	/// <returns></returns>
 	static constexpr vec<l, t> zero() requires std::is_arithmetic<t>::value{
 		return allof(t{0});
 	}
-		static constexpr vec<l, t> one() requires std::is_arithmetic<t>::value{
-				return allof(t{1});
+	/// <summary>
+	/// A vector filled with ones
+	/// </summary>
+	/// <returns></returns>
+	static constexpr vec<l, t> one() requires std::is_arithmetic<t>::value{
+			return allof(t{1});
 	}
 
-		constexpr vec<l, t> frac() const requires std::is_arithmetic<t>::value{
-			vec<l, t> result;
-			for (size_t i = 0; i < l; i++)
-			{
-				result[i] = t{ 1 } - e[i];
-			}
-			return result;
+	/// <summary>
+	/// One minus for each element.
+	/// </summary>
+	/// <returns></returns>
+	constexpr vec<l, t> frac() const requires std::is_arithmetic<t>::value{
+		vec<l, t> result;
+		for (size_t i = 0; i < l; i++)
+		{
+			result[i] = t{ 1 } - e[i];
+		}
+		return result;
 	}
-
-		constexpr vec<l, t> clamp(const t& min, const t& max) const {
+	/// <summary>
+	/// Clamp vector values.
+	/// </summary>
+	/// <param name="min"></param>
+	/// <param name="max"></param>
+	/// <returns></returns>
+	constexpr vec<l, t> clamp(const t& min, const t& max) const {
 		vec<l, t> result;
 		for (size_t i = 0; i < l; i++)
 		{
@@ -162,7 +184,10 @@ public:
 		}
 		return result;
 	}
-
+	/// <summary>
+	/// Round vector values.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<l, t> round() const {
 		vec<l, t> result;
 		for (size_t i = 0; i < l; i++)
@@ -171,6 +196,10 @@ public:
 		}
 		return result;
 	}
+	/// <summary>
+	/// Floor vector values.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<l, t> floor() const {
 		vec<l, t> result;
 		for (size_t i = 0; i < l; i++)
@@ -179,6 +208,10 @@ public:
 		}
 		return result;
 	}
+	/// <summary>
+	/// Ceiling vector values.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<l, t> ceil() const {
 		vec<l, t> result;
 		for (size_t i = 0; i < l; i++)
@@ -188,6 +221,10 @@ public:
 		return result;
 	}
 
+	/// <summary>
+	/// Get a vector with the sign of each element.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<l, t> sign() const requires std::is_signed_v<t> {
 		vec<l, t> result;
 		for (size_t i = 0; i < l; i++)
@@ -196,18 +233,29 @@ public:
 		}
 		return result;
 	}
-
+	/// <summary>
+	/// Default constructor for each vector element.
+	/// </summary>
 	constexpr vec() {
 		for (size_t i = 0; i < l; i++) {
 			e[i] = t();
 		}
 	}
+	/// <summary>
+	/// Copy constructor.
+	/// </summary>
+	/// <param name="other"></param>
 	constexpr vec(const vec<l, t>& other) {
 		for (size_t i = 0; i < l; i++) {
 			e[i] = other[i];
 		}
 	}
-
+	/// <summary>
+	/// Create vector from a subvector and a number of elements.
+	/// </summary>
+	/// <typeparam name="...Args"></typeparam>
+	/// <param name="other"></param>
+	/// <param name="...args"></param>
 	template <size_t a, typename... Args>
 	constexpr vec(const vec<a, t>& other, const Args&...args) requires (a + sizeof...(Args) == l) {
 		size_t i = 0;
@@ -216,7 +264,11 @@ public:
 		}
 		((e[i++] = static_cast<t>(args)), ...);
 	}
-
+	/// <summary>
+	/// Create vector from two subvectors.
+	/// </summary>
+	/// <param name="_a"></param>
+	/// <param name="_b"></param>
 	template <size_t a, size_t b>
 	constexpr vec(const vec<a, t>& _a, const vec<b, t>& _b) requires (a + b == l) {
 		size_t i = 0;
@@ -227,7 +279,13 @@ public:
 			e[i + j] = _b[j];
 		}
 	}
-
+	/// <summary>
+	/// Create a vector from two subvectors and some elements.
+	/// </summary>
+	/// <typeparam name="...Args"></typeparam>
+	/// <param name="_a"></param>
+	/// <param name="_b"></param>
+	/// <param name="...args"></param>
 	template <
 		size_t a, size_t b, typename... Args>
 		constexpr vec(const vec<a, t>& _a, const vec<b, t>& _b, const Args&...args) requires (a + b + sizeof...(Args) == l) {
@@ -242,13 +300,23 @@ public:
 		i += j;
 		((e[i++] = static_cast<t>(args)), ...);
 	}
-
+	/// <summary>
+	/// Create vector from elements.
+	/// </summary>
+	/// <typeparam name="...Args"></typeparam>
+	/// <param name="...args"></param>
 	template <typename... Args>
 	constexpr vec(const Args&...args) requires (sizeof...(Args) == l) {
 		size_t loop = 0;
 		((e[loop++] = static_cast<t>(args)), ...);
 	}
 
+	/// <summary>
+	/// Copy operator
+	/// </summary>
+	/// <typeparam name="t_"></typeparam>
+	/// <param name="other"></param>
+	/// <returns></returns>
 	template <int l_, typename t_>
 	constexpr vec<l, t>& operator=(vec<l_, t_> const& other) {
 		for (size_t i = 0; i < l; i++) {
@@ -383,14 +451,24 @@ public:
 		return true;
 	}
 
+	/// <summary>
+	/// Check if all elements equal a certain object.
+	/// </summary>
+	/// <typeparam name="t_"></typeparam>
+	/// <param name="value"></param>
+	/// <returns></returns>
 	template <typename t_>
-	constexpr bool all(t_ value) const {
+	constexpr bool all(const t_& value) const {
 		for (size_t i = 0; i < l; i++) {
 			if (e[i] != value) return false;
 		}
 		return true;
 	}
 
+	/// <summary>
+	/// Check if any element evaluate to true in an if statement. 
+	/// </summary>
+	/// <returns></returns>
 	constexpr bool any() const {
 		for (size_t i = 0; i < l; i++) {
 			if (e[i]) return true;
@@ -398,14 +476,24 @@ public:
 		return false;
 	}
 
+	/// <summary>
+	/// Check if any element equals 
+	/// </summary>
+	/// <typeparam name="t_"></typeparam>
+	/// <param name="value"></param>
+	/// <returns></returns>
 	template <typename t_>
-	constexpr bool any(t_ value) const {
+	constexpr bool any(const t_& value) const {
 		for (size_t i = 0; i < l; i++) {
 			if (e[i] == value) return true;
 		}
 		return false;
 	}
 
+	/// <summary>
+	/// Find the smallest element in the vector.
+	/// </summary>
+	/// <returns></returns>
 	constexpr t min_e() const {
 		t found = e[0];
 		for (size_t i = 1; i < l; i++)
@@ -415,6 +503,10 @@ public:
 		return found;
 	}
 
+	/// <summary>
+	/// Find the largest element in the vector.
+	/// </summary>
+	/// <returns></returns>
 	constexpr t max_e() const {
 		t found = e[0];
 		for (size_t i = 1; i < l; i++)
@@ -424,6 +516,10 @@ public:
 		return found;
 	}
 
+	/// <summary>
+	/// The sum of the vector elements
+	/// </summary>
+	/// <returns></returns>
 	constexpr t sum() const {
 		t r{ 0 };
 		for (size_t i = 0; i < l; i++)
@@ -433,10 +529,18 @@ public:
 		return r;
 	}
 
+	/// <summary>
+	/// Average of the vector elements
+	/// </summary>
+	/// <returns></returns>
 	constexpr t average() const {
 		return sum() / l;
 	}
 
+	/// <summary>
+	/// All elements in the vector multiplied by eachother.
+	/// </summary>
+	/// <returns></returns>
 	constexpr t volume() const {
 		t r{ 1 };
 		for (size_t i = 0; i < l; i++)
@@ -446,6 +550,7 @@ public:
 		return r;
 	}
 
+	// Print vector.
 	friend std::ostream& operator<<(std::ostream& os, const vec<l, t>& vec) {
 		os << '<';
 		for (size_t i = 0; i < l; i++) {
@@ -456,21 +561,45 @@ public:
 		return os;
 	}
 
+	// Index vector
 	constexpr t& operator[](const int index) { return e[index]; }
 	constexpr const t& operator[](const int index) const { return e[index]; }
 
+	/// <summary>
+	/// Get a raw pointer to the vector elements
+	/// </summary>
+	/// <returns></returns>
 	t* begin() const { return e; }
+
+	/// <summary>
+	/// The pointer after the vector array. Looks illegal.
+	/// </summary>
+	/// <returns></returns>
 	t* end() const { return &e[l]; }
 
+	/// <summary>
+	/// Static accessor for element reference.
+	/// </summary>
+	/// <returns></returns>
 	template <size_t i>
 	constexpr t& get_element() requires (i < l) {
 		return e[i];
 	}
+
+	/// <summary>
+	/// Static accessor for const element reference.
+	/// </summary>
+	/// <returns></returns>
 	template <size_t i>
 	constexpr const t& get_const_element() const requires (i < l) {
 		return e[i];
 	}
 
+	/// <summary>
+	/// Conversion from vector to other vector.
+	/// </summary>
+	/// <typeparam name="_t"></typeparam>
+	/// <param name=""></param>
 	template<size_t _l, typename _t>
 	constexpr operator vec<_l, _t>(void) const {
 		vec<_l, _t> result;
@@ -482,6 +611,10 @@ public:
 		return result;
 	}
 
+	/// <summary>
+	/// Creates a vector of the same size with the abs of each of this vectors elements.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<l, t> abs() const {
 		vec<l, t> r;
 		for (size_t i = 0; i < l; i++)
@@ -491,6 +624,11 @@ public:
 		return r;
 	}
 
+	/// <summary>
+	/// Creates a new vector where each elements is decided between the max of the parameter and this vectors element.
+	/// </summary>
+	/// <param name="a"></param>
+	/// <returns></returns>
 	constexpr vec<l, t> vmax(const t& a) const {
 		vec<l, t> r;
 		for (size_t i = 0; i < l; i++)
@@ -499,6 +637,11 @@ public:
 		}
 		return r;
 	}
+	/// <summary>
+	/// Creates a new vector where each element is the max of that element in this vector and the parameter vector.
+	/// </summary>
+	/// <param name="a"></param>
+	/// <returns></returns>
 	constexpr vec<l, t> vmax(const vec<l, t>& a) const {
 		vec<l, t> r;
 		for (size_t i = 0; i < l; i++)
@@ -508,6 +651,11 @@ public:
 		return r;
 	}
 
+	/// <summary>
+	/// Creates a new vector where each elements is decided between the min of the parameter and this vectors element.
+	/// </summary>
+	/// <param name="a"></param>
+	/// <returns></returns>
 	constexpr vec<l, t> vmin(const t& a) const {
 		vec<l, t> r;
 		for (size_t i = 0; i < l; i++)
@@ -516,6 +664,11 @@ public:
 		}
 		return r;
 	}
+	/// <summary>
+	/// Creates a new vector where each element is the min of that element in this vector and the parameter vector.
+	/// </summary>
+	/// <param name="a"></param>
+	/// <returns></returns>
 	constexpr vec<l, t> vmin(const vec<l, t>& a) const {
 		vec<l, t> r;
 		for (size_t i = 0; i < l; i++)
@@ -537,13 +690,22 @@ public:
 	/// <returns>Ortonogal vector</returns>
 	vec<2, t> _ortonogal() const requires (l == 2) { return v2<t>(-e[1], e[0]); }
 
+	/// <summary>
+	/// Cross product for a 3d vector.
+	/// </summary>
+	/// <param name="o"></param>
+	/// <returns></returns>
 	vec<3, t> cross(const vec<3, t>& o) const requires (l == 3) {
 		return vec<3, t>(e[1] * o[2] - e[2] * o[1], e[2] * o[0] - e[0] * o[2],
 			e[0] * o[1] - e[1] * o[0]);
 	}
 
 
-
+	/// <summary>
+	/// Cross product for a 7d vector
+	/// </summary>
+	/// <param name="o"></param>
+	/// <returns></returns>
 	vec<7, t> cross(const vec<7, t>& o) const requires (l == 7) {
 		return vec<7, t>(
 			e[1] * o[3] - e[3] * o[1] + e[2] * o[6] - e[6] * o[2] + e[4] * o[5] - e[5] * o[4],
@@ -555,6 +717,7 @@ public:
 			e[0] * o[2] - e[2] * o[0] + e[1] * o[5] - e[5] * o[1] + e[3] * o[4] - e[4] * o[3]);
 	}
 
+	// Create accessors for elements. accessed with for example x() for reference and _x() for const reference.
 	VECTOR_ELEMENT(x, 0);
 	VECTOR_ELEMENT(y, 1);
 	VECTOR_ELEMENT(z, 2);
@@ -562,14 +725,19 @@ public:
 
 	t _o() const { return t(); }
 
+	// Create all combinations of vector elements including o for zero. For example zyx() or xzy()
+	// goes up to 4 dimensions
 	STANDARD_SUB_VECTORS;
 };
 
+// A vector specializeation for size 0 to avoid some problems.
+// I see no reason to create this.
 template<typename t>
 struct vec<0, t> {
 
 };
 
+// Create typedefs for v2, v3, v4 etc.
 VECTOR(2);
 VECTOR(3);
 VECTOR(4);
@@ -579,7 +747,13 @@ VECTOR(7);
 
 
 
-
+/// <summary>
+/// Dot product between two vectors.
+/// </summary>
+/// <typeparam name="t"></typeparam>
+/// <param name="a"></param>
+/// <param name="b"></param>
+/// <returns></returns>
 template<size_t l, typename t>
 constexpr t dot(const vec<l, t>& a, const vec<l, t>& b) {
 	t result = t();
@@ -601,6 +775,10 @@ struct quaternion {
 	t y{ 0 };
 	t z{ 0 };
 	t w{ 0 };
+	/// <summary>
+	/// Get the identity quaternion
+	/// </summary>
+	/// <returns></returns>
 	static constexpr quaternion<t> identity() { return quaternion<t>(0, 0, 0, 1); }
 	constexpr quaternion() { }
 	constexpr quaternion(const quaternion& other) : x(other.x), y(other.y), z(other.z), w(other.w) { }

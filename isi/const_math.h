@@ -11,7 +11,7 @@ concept Floating = std::is_floating_point<t>::value;
 
 template<Number t>
 t c_pow(t a, t b) {
-	return static_cast<t>(std::pow(static_cast<double>(a), static_cast<double>(b)));
+	return static_cast<t>(std::pow(a, b));
 }
 
 template<>
@@ -21,7 +21,7 @@ float c_pow<float>(float a, float b) {
 
 template<Number t>
 t c_sqrt(t a) {
-	return static_cast<t>(std::sqrt(static_cast<double>(a)));
+	return static_cast<t>(std::sqrt(a));
 }
 
 template<>

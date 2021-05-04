@@ -4,29 +4,47 @@
 template<size_t w, size_t h, Floating t = DEFAULT_FLOATING>
 struct matrix {
 private:
+	// Store matrix data in a vector of vectors
 	vec<h, vec<w, t>> data;
 
 public:
 	constexpr matrix() : data() { }
-
+	/// <summary>
+	/// Copy constructor
+	/// </summary>
+	/// <param name="other"></param>
 	constexpr matrix(const matrix<h, w, t>& other) : data(other.data) {}
-
+	/// <summary>
+	/// Create matrix from individual elements. Element count must equal width * height.
+	/// </summary>
+	/// <typeparam name="...Args"></typeparam>
+	/// <param name="...args"></param>
 	template <typename... Args>
 	constexpr matrix(Args... args) requires (sizeof...(Args) == w * h) {
 		size_t loop = 0;
 		((data[loop / w][(loop++) % w] = static_cast<t>(args)), ...);
 	}
 
+	/// <summary>
+	/// Create matrix from row vectors.
+	/// </summary>
 	template <typename... Args>
 	constexpr matrix(Args... args) requires (sizeof...(Args) == h) : data(args...) { }
 
 
-
+	/// <summary>
+	/// Get a row.
+	/// </summary>
 	constexpr vec<w, t> row(size_t index) const {
 		if (index >= h) throw;
 		return data[index];
 	}
 
+	/// <summary>
+	/// Get a column.
+	/// </summary>
+	/// <param name="index"></param>
+	/// <returns></returns>
 	constexpr vec<h, t> col(size_t index) const {
 		if (index >= w) throw;
 		vec<h, t> result;
@@ -39,7 +57,11 @@ public:
 	constexpr vec<w, t>& operator[](size_t index) {
 		return data[index];
 	}
-
+	/// <summary>
+	/// matrix multiplication
+	/// </summary>
+	/// <param name="other"></param>
+	/// <returns></returns>
 	template<size_t _w>
 	constexpr matrix<_w, h, t> operator*(const matrix<_w, w, t>& other) const {
 		matrix<_w, h, t> result;
@@ -51,7 +73,11 @@ public:
 		}
 		return result;
 	}
-
+	/// <summary>
+	/// Multiply vector by this matrix.
+	/// </summary>
+	/// <param name="other"></param>
+	/// <returns></returns>
 	constexpr vec<h, t> operator*(const vec<h, t>& other) const {
 		vec<h, t> result;
 		for (size_t y = 0; y < h; y++)
@@ -60,7 +86,11 @@ public:
 		}
 		return result;
 	}
-
+	/// <summary>
+	/// Scale matrix
+	/// </summary>
+	/// <param name="other"></param>
+	/// <returns></returns>
 	constexpr matrix<w, h, t> operator*(const t& other) const {
 		matrix<w, h, t> result;
 
@@ -82,6 +112,12 @@ public:
 		return *this;
 	}
 
+	/// <summary>
+	/// Get sub matrix, where you exclude the row at _y and the column at _x.
+	/// </summary>
+	/// <param name="_x"></param>
+	/// <param name="_y"></param>
+	/// <returns></returns>
 	constexpr matrix<w - 1, h - 1, t> get_sub(size_t _x, size_t _y) const requires (w > 1 && h > 1) {
 		matrix<w - 1, w - 1, t> sub;
 		size_t loop = 0;
@@ -97,6 +133,12 @@ public:
 		return sub;
 	}
 
+	/// <summary>
+	/// Set a reference to a sub.
+	/// </summary>
+	/// <param name="sub"></param>
+	/// <param name="_x"></param>
+	/// <param name="_y"></param>
 	constexpr void get_sub(matrix<w - 1, h - 1, t>& sub, size_t _x, size_t _y) const requires (w > 1 && h > 1) {
 		size_t loop = 0;
 		for (size_t y = 0; y < h; y++)
@@ -110,13 +152,25 @@ public:
 		}
 	}
 
+	/// <summary>
+	/// Get determinant of this matrix
+	/// </summary>
+	/// <returns></returns>
 	constexpr t determinant() const requires (w == h && w == 1) {
 		return data[0][0];
 	}
+	/// <summary>
+	/// Get determinant of this matrix
+	/// </summary>
+	/// <returns></returns>
 	constexpr t determinant() const requires (w == h && w == 2) {
 		return data[0][0] * data[1][1] - data[1][0] * data[0][1];
 	}
 
+	/// <summary>
+	/// Get determinant of this matrix
+	/// </summary>
+	/// <returns></returns>
 	constexpr t determinant() const requires (w == h && w >= 3) {
 		matrix<w - 1, w - 1, t> sub;
 		t d{ 0 };
@@ -130,6 +184,10 @@ public:
 		return d;
 	}
 
+	/// <summary>
+	/// Get a transposed version of this matrix.
+	/// </summary>
+	/// <returns></returns>
 	constexpr matrix<h, w, t> transposed() const {
 		matrix<h, w, t> result;
 		for (size_t y = 0; y < h; y++)
@@ -142,6 +200,10 @@ public:
 		return result;
 	}
 
+	/// <summary>
+	/// Get the cofactor of this matrix.
+	/// </summary>
+	/// <returns></returns>
 	constexpr matrix<w, h, t> cofactor() const requires (w == h && w > 1) {
 		matrix<w, h, t> result;
 		matrix<w - 1, h - 1, t> sub;
@@ -157,6 +219,10 @@ public:
 		return result;
 	}
 
+	/// <summary>
+	/// Get the identity matrix.
+	/// </summary>
+	/// <returns></returns>
 	static constexpr matrix<w, h, t> identity() {
 		constexpr size_t max = min(w, h);
 		matrix<w, h, t> result;
@@ -167,7 +233,10 @@ public:
 		return result;
 	}
 
-	// Inverse function for a 2x2 matrix
+	/// <summary>
+	/// Inverse of 2x2 matrix.
+	/// </summary>
+	/// <returns></returns>
 	constexpr matrix<2, 2, t> inversed() const requires (w == 2 && h == 2) {
 		t d = determinant();
 		if (d == t{ 0 }) throw;
@@ -176,7 +245,10 @@ public:
 			-data[1][0] * d, data[0][0] * d);
 	}
 
-	// Inverse function for a 3x3 matrix
+	/// <summary>
+	/// Inverse of 3x3 matrix
+	/// </summary>
+	/// <returns></returns>
 	constexpr matrix<3, 3, t> inversed() const requires (w == 3 && h == 3) {
 		t d = determinant();
 		if (d == t{ 0 }) throw;
@@ -189,6 +261,10 @@ public:
 	// Function to invert a square matrix of any size.
 	// Inverting a matrix scales O(2^n) where n is the number of rows or columns so not very efficient for large matrices.
 	// According to my tests on my craptop an 8x8 matrix takes ~6ms to inverse.
+	/// <summary>
+	/// Inverse of any size matrix. Is slow for big matrices
+	/// </summary>
+	/// <returns></returns>
 	constexpr matrix<w, h, t> inversed() const requires (w == h && w > 3) {
 		t  d = determinant();
 
@@ -208,6 +284,11 @@ public:
 		return result;
 	}
 
+	/// <summary>
+	/// Add matrices
+	/// </summary>
+	/// <param name="other"></param>
+	/// <returns></returns>
 	constexpr matrix<w, h, t> operator+(const matrix<w, h, t>& other) const {
 		matrix<w, h, t> result;
 
@@ -248,7 +329,13 @@ public:
 		}
 		return *this;
 	}
-
+	/// <summary>
+	/// Print matrix. Does not look nice right now. 
+	/// To make it look nicer one could first store all the strings of the elements and make sure each element takes the same amount of space in the final string.
+	/// </summary>
+	/// <param name="os"></param>
+	/// <param name="mat"></param>
+	/// <returns></returns>
 	friend std::ostream& operator<<(std::ostream& os, const matrix<w, h, t>& mat) {
 
 		for (size_t y = 0; y < h; y++)
@@ -263,16 +350,26 @@ public:
 		return os;
 	}
 };
-
+/// <summary>
+/// Template specializeation for matrices with width 0, to not create problems.
+/// </summary>
 template<size_t h, Floating t>
 struct matrix<0, h, t> {
 
 };
+/// <summary>
+/// Template specializeation for matrices with height 0, to not create problems.
+/// </summary>
 template<size_t w, Floating t>
 struct matrix<w, 0, t> {
 
 };
 
+/// <summary>
+/// Convertion from quaternion to rotation matrix.
+/// </summary>
+/// <param name="q"></param>
+/// <returns></returns>
 template<Floating t = DEFAULT_FLOATING>
 constexpr matrix<3, 3, t> quat2rotm(const quaternion<t>& q) {
 	return matrix<3, 3, t>(t{ 2.0 } *(q.x * q.x + q.y * q.y) - t{ 1.0 },
@@ -285,11 +382,21 @@ constexpr matrix<3, 3, t> quat2rotm(const quaternion<t>& q) {
 		t{ 2.0 } *(q.z * q.w + q.x * q.y),
 		t{ 2.0 } *(q.x * q.x + q.w * q.w) - t{ 1.0 });
 }
+/// <summary>
+/// Get the translation of a transform matrix.
+/// </summary>
+/// <param name="m"></param>
+/// <returns></returns>
 template<Floating t = DEFAULT_FLOATING>
 constexpr v3<t> transfm_center(const matrix<4, 4, t>& m) {
 	return vec<3, t>(m[0][3], m[1][3], m[2][3]);
 }
 
+/// <summary>
+/// Convertion from rotation matrix to quaternion.
+/// </summary>
+/// <param name="m"></param>
+/// <returns></returns>
 template<Floating t = DEFAULT_FLOATING>
 constexpr quaternion<t> rotm2quat(const matrix<3, 3, t>& m) {
 	quaternion result;
@@ -304,6 +411,7 @@ constexpr quaternion<t> rotm2quat(const matrix<3, 3, t>& m) {
 
 #define MATRIX(w, h) using matrix##w##x##h = matrix<w, h>; template<typename t = DEFAULT_FLOATING> using matrix##w##x##h##_ = matrix<w, h, t>
 
+// Define default matrices.
 MATRIX(2, 2);
 MATRIX(2, 3);
 MATRIX(3, 2);
@@ -313,3 +421,5 @@ MATRIX(4, 2);
 MATRIX(3, 4);
 MATRIX(4, 3);
 MATRIX(4, 4);
+
+#undef MATRIX

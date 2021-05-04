@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <type_traits>
+#include <array>
 
 #include "const_math.h"
 
@@ -125,7 +126,10 @@ struct _vector {
 template <size_t l, typename t = DEFAULT_FLOATING>
 struct vec : _vector {
 private:
-	t e[l];
+	std::array<t, l> e{0};
+
+    /// TODO: move a lot of this of this into _vector
+    constexpr size_t size() const { return l; }
 
 	/// <summary>
 	/// Create a vector with all of one element.
@@ -134,10 +138,7 @@ private:
 	/// <returns></returns>
 	static constexpr vec<l, t> allof(const t& val) {
 		vec<l, t> r;
-		for (size_t i = 0; i < l; i++)
-		{
-			r[i] = val;
-		}
+        std::fill(r.begin(), r.end(), val);
 		return r;
 	}
 
@@ -222,26 +223,20 @@ public:
 	constexpr vec<l, t> sign() const requires std::is_signed_v<t> {
 		vec<l, t> result;
 		for (size_t i = 0; i < l; i++) {
-			result[i] = e[i] < 0 ? t{ -1 } : t{ 1 };
+			result[i] = e[i] >> (sizeof(t)*8-1);
 		}
 		return result;
 	}
 	/// <summary>
 	/// Default constructor for each vector element.
 	/// </summary>
-	constexpr vec() {
-		for (size_t i = 0; i < l; i++) {
-			e[i] = t();
-		}
-	}
+	constexpr vec() {}
 	/// <summary>
 	/// Copy constructor.
 	/// </summary>
 	/// <param name="other"></param>
 	constexpr vec(const vec<l, t>& other) {
-		for (size_t i = 0; i < l; i++) {
-			e[i] = other[i];
-		}
+        std::copy(other.e.begin(), other.e.end(), e.begin());
 	}
 	/// <summary>
 	/// Create vector from a subvector and a number of elements.
@@ -279,9 +274,8 @@ public:
 	/// <param name="_a"></param>
 	/// <param name="_b"></param>
 	/// <param name="...args"></param>
-	template <
-		size_t a, size_t b, typename... Args>
-		constexpr vec(const vec<a, t>& _a, const vec<b, t>& _b, const Args&...args) requires (a + b + sizeof...(Args) == l) {
+	template <size_t a, size_t b, typename... Args>
+	constexpr vec(const vec<a, t>& _a, const vec<b, t>& _b, const Args&...args) requires (a + b + sizeof...(Args) == l) {
 		size_t i = 0;
 		for (; i < a; i++) {
 			e[i] = _a[i];

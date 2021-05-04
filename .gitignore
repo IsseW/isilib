@@ -12,7 +12,7 @@
 *.cpp
 *.out
 makefile
-
+.vscode
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

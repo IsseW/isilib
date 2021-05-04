@@ -136,7 +136,7 @@ private:
 	/// </summary>
 	/// <param name="val"></param>
 	/// <returns></returns>
-	static constexpr vec<l, t> allof(const t& val) {
+	static constexpr vec<l, t> allof(t val) {
 		vec<l, t> r;
         std::fill(r.begin(), r.end(), val);
 		return r;
@@ -210,7 +210,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> ceil() const {
 		vec<l, t> result;
-		for (size_t i = 0; i < l; i++) {
+		for(size_t i = 0; i < l; i++) {
 			result[i] = std::ceil(e[i]);
 		}
 		return result;
@@ -222,8 +222,8 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> sign() const requires std::is_signed_v<t> {
 		vec<l, t> result;
-		for (size_t i = 0; i < l; i++) {
-			result[i] = e[i] >> (sizeof(t)*8-1);
+		for(size_t i = 0; i < l; i++) {
+			result[i] = e[i] & (0b1 << sizeof(t)*8-1) +1 ;
 		}
 		return result;
 	}
@@ -450,7 +450,7 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	constexpr bool any() const {
-		return std::find_if(e.begin(), e.end(), [](t v){ return v != 0; });
+		return std::find_if(e.begin(), e.end(), [](t v){ return v != 0; }) != e.end();
 	}
 	/// <summary>
 	/// Check if any element equals the given value.
@@ -467,7 +467,7 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	constexpr t min_e() const {
-		return std::min_element(e.begin(), e.end());
+		return *std::min_element(e.begin(), e.end());
 	}
 
 	/// <summary>
@@ -475,7 +475,7 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	constexpr t max_e() const {
-        return std::max_element(e.begin(), e.end());
+        return *std::max_element(e.begin(), e.end());
 	}
 
 	/// <summary>
@@ -529,20 +529,18 @@ public:
 	/// Get a raw pointer to the vector elements
 	/// </summary>
 	/// <returns></returns>
-	auto begin() const { return e.begin(); }
-
+	auto begin() { return e.begin(); }
 	/// <summary>
 	/// The pointer after the vector array. Looks illegal.
 	/// </summary>
 	/// <returns></returns>
-	auto end() const { return e.end(); }
-
+	auto end() { return e.end(); }
 	/// <summary>
 	/// Const accessor for element reference.
 	/// </summary>
 	/// <returns></returns>
 	template <size_t i>
-	constexpr t& get() requires (i < l) {
+	constexpr const t& get() const requires (i < l) {
 		return e[i];
 	}
 
@@ -551,7 +549,7 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	template <size_t i>
-	t& get() const requires (i < l) {
+	t& get() requires (i < l) {
 		return e[i];
 	}
 

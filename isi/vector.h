@@ -122,7 +122,6 @@ struct _vector {
 
 };
 
-
 template <size_t l, typename t = DEFAULT_FLOATING>
 struct vec : _vector {
 private:
@@ -147,25 +146,24 @@ public:
 	/// A vector with only 0s
 	/// </summary>
 	/// <returns></returns>
-	static constexpr vec<l, t> zero() requires std::is_arithmetic<t>::value{
+	static constexpr vec<l, t> zero() requires std::is_arithmetic<t>::value {
 		return allof(t{0});
 	}
 	/// <summary>
 	/// A vector filled with ones
 	/// </summary>
 	/// <returns></returns>
-	static constexpr vec<l, t> one() requires std::is_arithmetic<t>::value{
-			return allof(t{1});
+	static constexpr vec<l, t> one() requires std::is_arithmetic<t>::value {
+		return allof(t{1});
 	}
 
 	/// <summary>
 	/// One minus for each element.
 	/// </summary>
 	/// <returns></returns>
-	constexpr vec<l, t> frac() const requires std::is_arithmetic<t>::value{
+	constexpr vec<l, t> frac() const requires std::is_arithmetic<t>::value {
 		vec<l, t> result;
-		for (size_t i = 0; i < l; i++)
-		{
+		for (size_t i = 0; i < l; i++) {
 			result[i] = t{ 1 } - e[i];
 		}
 		return result;
@@ -178,8 +176,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> clamp(const t& min, const t& max) const {
 		vec<l, t> result;
-		for (size_t i = 0; i < l; i++)
-		{
+		for (size_t i = 0; i < l; i++) {
 			result[i] = std::clamp(e[i], min, max);
 		}
 		return result;
@@ -190,8 +187,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> round() const {
 		vec<l, t> result;
-		for (size_t i = 0; i < l; i++)
-		{
+		for (size_t i = 0; i < l; i++) {
 			result[i] = std::round(e[i]);
 		}
 		return result;
@@ -202,8 +198,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> floor() const {
 		vec<l, t> result;
-		for (size_t i = 0; i < l; i++)
-		{
+		for (size_t i = 0; i < l; i++) {
 			result[i] = std::floor(e[i]);
 		}
 		return result;
@@ -214,8 +209,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> ceil() const {
 		vec<l, t> result;
-		for (size_t i = 0; i < l; i++)
-		{
+		for (size_t i = 0; i < l; i++) {
 			result[i] = std::ceil(e[i]);
 		}
 		return result;
@@ -227,8 +221,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> sign() const requires std::is_signed_v<t> {
 		vec<l, t> result;
-		for (size_t i = 0; i < l; i++)
-		{
+		for (size_t i = 0; i < l; i++) {
 			result[i] = e[i] < 0 ? t{ -1 } : t{ 1 };
 		}
 		return result;
@@ -562,8 +555,8 @@ public:
 	}
 
 	// Index vector
-	constexpr t& operator[](const int index) { return e[index]; }
-	constexpr const t& operator[](const int index) const { return e[index]; }
+	t& operator[](const int index) { return e[index]; }
+	constexpr t& operator[](const int index) const { return e[index]; }
 
 	/// <summary>
 	/// Get a raw pointer to the vector elements
@@ -872,7 +865,6 @@ struct quaternion {
 	/// <param name="u"></param>
 	/// <returns></returns>
 	constexpr vec<3, t> operator*(const vec<3, t>& u) const {
-
 		// vec<3, t> v(x, y, z);
 		quaternion<t> v(u._x(), u._y(), u._z(), t{ 0 });
 		quaternion<t> result = (*this * v) * conjugate();

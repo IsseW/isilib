@@ -277,7 +277,7 @@ template<Floating t = DEFAULT_FLOATING>
 constexpr matrix<3, 3, t> quat2rotm(const quaternion<t>& q) {
 	return matrix<3, 3, t>(t{ 2.0 } *(q.x * q.x + q.y * q.y) - t{ 1.0 },
 		t{ 2.0 } *(q.y * q.z - q.x * q.w),
-		t{ 2.0 } *(q.y * q.w + q.x * q.z),
+		t{ 2.0 } *(q.y * q.w + q.x * q.z),r det har
 		t{ 2.0 } *(q.y * q.z + q.x * q.w),
 		t{ 2.0 } *(q.x * q.x + q.z * q.z) - t{ 1.0 },
 		t{ 2.0 } *(q.z * q.w - q.x * q.y),

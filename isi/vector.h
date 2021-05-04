@@ -11,13 +11,13 @@
 
 #pragma region macros
 
-#define VECTOR_ELEMENT(name, index)                    \
+#define VECTOR_ELEMENT(name, index)											\
   constexpr t &name() requires (l > index) { return get_element<index>(); } \
   constexpr const t &_##name() const requires (l > index) { return get_const_element<index>(); }
 
 #define FUNC_CALL(x) _##x()
 
-#define ELE_V(...)                                                    \
+#define ELE_V(...)                                                      \
   constexpr vec<NARGS(__VA_ARGS__), t> NO_SPACES(__VA_ARGS__)() const { \
     return vec<NARGS(__VA_ARGS__), t>(APPLY(FUNC_CALL, __VA_ARGS__));   \
   }
@@ -46,25 +46,25 @@
 #define VECTOR_C_OPERATOR(op)                                     \
   template <typename t_>                                          \
   constexpr vec<l, bool> operator op(const vec<l, t_> &other) const { \
-    vec<l, bool> result;                                            \
-    for (size_t i = 0; i < l; i++) {                              \
-      result[i] = e[i] op other[i];                             \
-    }                                                             \
-    return result;                                                \
-  }                                     \
-  template <typename t_>                                          \
-  constexpr vec<l, bool> operator op(const t_ &other) const { \
-    vec<l, bool> result;                                            \
-    for (size_t i = 0; i < l; i++) {                              \
-      result[i] = e[i] op other;                             \
-    }                                                             \
-    return result;                                                \
+    vec<l, bool> result;                                              \
+    for (size_t i = 0; i < l; i++) {								  \
+      result[i] = e[i] op other[i];									  \
+    }																  \
+    return result;													  \
+  }																	  \
+  template <typename t_>											  \
+  constexpr vec<l, bool> operator op(const t_ &other) const {		  \
+    vec<l, bool> result;											  \
+    for (size_t i = 0; i < l; i++) {								  \
+      result[i] = e[i] op other;									  \
+    }																  \
+    return result;													  \
   }
 
 #define VECTOR_COPY_OPERATOR(op)											   \
   template <size_t l_, typename t_>											   \
   constexpr auto operator op(const vec<l_, t_> &other) const {				   \
-    vec<l, t> result;															   \
+    vec<l, t> result;														   \
     for (size_t i = 0; i < l; i++) {										   \
       if (i < l_) {															   \
         result[i] = e[i] op other[i];									       \
@@ -76,28 +76,28 @@
   }																			   \
   template <typename t_>													   \
   constexpr auto operator op(const t_ &other) const {						   \
-    vec<l, t> result;															   \
+    vec<l, t> result;														   \
     for (size_t i = 0; i < l; i++) {										   \
       result[i] = e[i] op other;											   \
     }																		   \
     return result;															   \
   }
 
-#define VECTOR_ASSIGN_OPERATOR(op)                                 \
-  template <size_t l_, typename t_>                                \
+#define VECTOR_ASSIGN_OPERATOR(op)									   \
+  template <size_t l_, typename t_>									   \
   constexpr vec<l, t> &operator CAT(op, =)(const vec<l_, t_> &other) { \
-    constexpr int max = cmin(l, l_);                                \
-    for (size_t i = 0; i < max; i++) {                             \
-      e[i] CAT(op, =) other[i];                                    \
-    }                                                              \
-    return *this;                                                  \
-  }                                                                \
-  template <typename t_>                                           \
-  constexpr vec<l, t> &operator CAT(op, =)(const t_ &other) {        \
-    for (size_t i = 0; i < l; i++) {                               \
-      e[i] CAT(op, =) other;                                       \
-    }                                                              \
-    return *this;                                                  \
+    constexpr int max = cmin(l, l_);                                   \
+    for (size_t i = 0; i < max; i++) {                                 \
+      e[i] CAT(op, =) other[i];                                        \
+    }                                                                  \
+    return *this;                                                      \
+  }                                                                    \
+  template <typename t_>                                               \
+  constexpr vec<l, t> &operator CAT(op, =)(const t_ &other) {          \
+    for (size_t i = 0; i < l; i++) {                                   \
+      e[i] CAT(op, =) other;                                           \
+    }                                                                  \
+    return *this;                                                      \
   }
 
 #define VECTOR_OPERATOR(op) VECTOR_COPY_OPERATOR(op) VECTOR_ASSIGN_OPERATOR(op)
@@ -249,8 +249,6 @@ public:
 		((e[loop++] = static_cast<t>(args)), ...);
 	}
 
-	inline virtual ~vec() {}
-
 	template <int l_, typename t_>
 	constexpr vec<l, t>& operator=(vec<l_, t_> const& other) {
 		for (size_t i = 0; i < l; i++) {
@@ -259,6 +257,7 @@ public:
 		return *this;
 	}
 
+	// For operator # and some type _t define v<t> # v<_t>, v<t> #= v<_t>, v<t> # _t and v<t> #= _t
 	VECTOR_OPERATOR(+);
 	VECTOR_OPERATOR(-);
 	VECTOR_OPERATOR(*);
@@ -268,13 +267,17 @@ public:
 	VECTOR_OPERATOR(| );
 	VECTOR_OPERATOR(^);
 
+	// For operator # and some type _t define v<t> # v<_t> and v<t> # _t
 	VECTOR_COPY_OPERATOR(&&);
 	VECTOR_COPY_OPERATOR(|| );
+
+	// For operator # define #v<t>
 
 	VECTOR_S_OPERATOR(-);
 	VECTOR_S_OPERATOR(~);
 	VECTOR_S_OPERATOR(!);
 
+	// Define equality vector operators, all returning a bool vector of all individual elements compared. either with elements of another vector or with a single element
 	VECTOR_C_OPERATOR(== );
 	VECTOR_C_OPERATOR(!= );
 	VECTOR_C_OPERATOR(< );
@@ -282,6 +285,7 @@ public:
 	VECTOR_C_OPERATOR(<= );
 	VECTOR_C_OPERATOR(>= );
 
+	// increment operators, increments each value individually. 
 	constexpr vec<l, t> operator++() {
 		vec<l, t> c;
 		for (size_t i = 0; i < l; i++) {
@@ -310,6 +314,12 @@ public:
 		return *this;
 	}
 
+	/// <summary>
+	/// Lerp this vector towards the goal.
+	/// </summary>
+	/// <param name="goal">The vector that this vector should lerp towards.</param>
+	/// <param name="time">How far to lerp.</param>
+	/// <returns>A reference to this.</returns>
 	constexpr vec<l, t>& lerp_towards(const vec<l, t>& goal, float time) {
 		for (size_t i = 0; i < l; i++) {
 			e[i] = e[i] * (1.0f - time) + goal[i] * time;
@@ -317,6 +327,10 @@ public:
 		return *this;
 	}
 
+	/// <summary>
+	/// Get the reverse of this vector. 
+	/// </summary>
+	/// <returns>A reversed version of this vector.</returns>
 	constexpr vec<l, t> reverse() {
 		vec<l, t> result;
 		for (size_t i = 0; i < l; i++) {
@@ -325,6 +339,10 @@ public:
 		return result;
 	}
 
+	/// <summary>
+	/// The square length of this vector
+	/// </summary>
+	/// <returns></returns>
 	constexpr t length_sqr() const {
 		t r{ 0.0 };
 		for (size_t i = 0; i < l; i++) {
@@ -332,16 +350,32 @@ public:
 		}
 		return r;
 	}
+	/// <summary>
+	/// The length of this vector
+	/// </summary>
+	/// <typeparam name="Returns">What type this function should return.</typeparam>
+	/// <returns>Length of vector</returns>
+	template<class Returns = t>
+	Returns length() const { return std::sqrt(length_sqr()); }
 
-	t length() const { return std::sqrt(length_sqr()); }
-
+	/// <summary>
+	/// Returns a normalized version of this vector.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<l, t> normalized() const {
 		return operator/(length());
 	}
+	/// <summary>
+	/// Normalizes this vector.
+	/// </summary>
+	/// <returns></returns>
 	constexpr vec<l, t> normalize() const {
 		operator/=(length());
 	}
-
+	/// <summary>
+	/// Check if all elements evaluate to true in an if statement.
+	/// </summary>
+	/// <returns></returns>
 	constexpr bool all() const {
 		for (size_t i = 0; i < l; i++) {
 			if (!e[i]) return false;
@@ -433,7 +467,7 @@ public:
 		return e[i];
 	}
 	template <size_t i>
-	inline constexpr const t& get_const_element() const requires (i < l) {
+	constexpr const t& get_const_element() const requires (i < l) {
 		return e[i];
 	}
 
@@ -491,17 +525,26 @@ public:
 		return r;
 	}
 
-	inline vec<2, t> ortonogal() const requires (l == 2) { return v2<t>(e[1], -e[0]); }
-	inline vec<2, t> _ortonogal() const requires (l == 2) { return v2<t>(-e[1], e[0]); }
+	/// <summary>
+	/// Returns a vector with a 90 degree angle to this. If It's the zero vector it return the zero vector.
+	/// </summary>
+	/// <returns>Ortonogal vector</returns>
+	vec<2, t> ortonogal() const requires (l == 2) { return v2<t>(e[1], -e[0]); }
+	/// <summary>
+	/// Returns a vector with a 90 degree angle to this. If It's the zero vector it return the zero vector.
+	/// It is the negated vector of the other ortonogal function.
+	/// </summary>
+	/// <returns>Ortonogal vector</returns>
+	vec<2, t> _ortonogal() const requires (l == 2) { return v2<t>(-e[1], e[0]); }
 
-	inline vec<3, t> cross(const vec<3, t>& o) const requires (l == 3) {
+	vec<3, t> cross(const vec<3, t>& o) const requires (l == 3) {
 		return vec<3, t>(e[1] * o[2] - e[2] * o[1], e[2] * o[0] - e[0] * o[2],
 			e[0] * o[1] - e[1] * o[0]);
 	}
 
 
 
-	inline vec<7, t> cross(const vec<7, t>& o) const requires (l == 7) {
+	vec<7, t> cross(const vec<7, t>& o) const requires (l == 7) {
 		return vec<7, t>(
 			e[1] * o[3] - e[3] * o[1] + e[2] * o[6] - e[6] * o[2] + e[4] * o[5] - e[5] * o[4],
 			e[2] * o[4] - e[4] * o[2] + e[3] * o[0] - e[0] * o[3] + e[5] * o[6] - e[6] * o[7],
@@ -517,7 +560,7 @@ public:
 	VECTOR_ELEMENT(z, 2);
 	VECTOR_ELEMENT(w, 3);
 
-	inline t _o() const { return t(); }
+	t _o() const { return t(); }
 
 	STANDARD_SUB_VECTORS;
 };
@@ -548,7 +591,7 @@ constexpr t dot(const vec<l, t>& a, const vec<l, t>& b) {
 }
 
 template<size_t l, typename t, typename t_>
-constexpr inline vec<l, t> operator*(const t& a, const vec<l, t>& b) {
+constexpr vec<l, t> operator*(const t& a, const vec<l, t>& b) {
 	return b * a;
 }
 
@@ -564,7 +607,7 @@ struct quaternion {
 	constexpr quaternion(const t& x, const t& y, const t& z, const t& w) : x(x), y(y), z(z), w(w) { }
 	constexpr quaternion(const vec<4, t>& other) : x(other._x()), y(other._y()), z(other._z()), w(other._w()) { }
 
-	constexpr inline static quaternion<t> from_euler(const vec<3, t>& other) {
+	constexpr static quaternion<t> from_euler(const vec<3, t>& other) {
 		return from_euler(other._x(), other._y(), other._z());
 	}
 
@@ -636,14 +679,14 @@ struct quaternion {
 		return { result.x, result.y, result.z }; //u * (t{ 2.0 } * dot(u, v)) + v * (w * w - dot(u, u)) + u.cross(vec) * (t{ 2.0 } * w);
 	}
 
-	constexpr inline vec<3, t> right() const {
+	constexpr vec<3, t> right() const {
 		return vec<3, t>(x * t{ 2.0 } + x * (w * w - 1), y * (w * w - 1) - z * w * t{ 2.0 }, z * (w * w - 1) + y * w * t{ 2.0 });
 	}
-	constexpr inline vec<3, t> up() const {
+	constexpr vec<3, t> up() const {
 		return vec<3, t>(x * (w * w - 1) + z * w * t{ 2.0 }, y * (w * w - 1) + y * t{ 2.0 }, z * (w * w - 1) - x * w * t{ 2.0 });
 	}
 
-	constexpr inline vec<3, t> forward() const {
+	constexpr vec<3, t> forward() const {
 		return vec<3, t>(x * (w * w - 1) - y * t{ 2.0 } *w, y * (w * w - 1) + x * t{ 2.0 } *w, z * (w * w - 1) + z * t{ 2.0 });
 	}
 

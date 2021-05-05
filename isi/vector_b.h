@@ -126,10 +126,10 @@ struct _vector {
 template <size_t l, typename t = DEFAULT_FLOATING>
 struct vec : _vector {
 private:
-	std::array<t, l> e{0};
+	std::array<t, l> e{ 0 };
 
-    /// TODO: move a lot of this of this into _vector
-    constexpr size_t size() const { return l; }
+	/// TODO: move a lot of this of this into _vector
+	constexpr size_t size() const { return l; }
 
 	/// <summary>
 	/// Create a vector with all of one element.
@@ -138,7 +138,7 @@ private:
 	/// <returns></returns>
 	static constexpr vec<l, t> allof(t val) {
 		vec<l, t> r;
-        std::fill(r.begin(), r.end(), val);
+		std::fill(r.begin(), r.end(), val);
 		return r;
 	}
 
@@ -147,35 +147,35 @@ public:
 	/// A vector with only 0s.
 	/// </summary>
 	/// <returns></returns>
-	static constexpr vec<l, t> zero() requires std::is_arithmetic<t>::value {
+	static constexpr vec<l, t> zero() requires std::is_arithmetic<t>::value{
 		return allof(t{0});
 	}
-	/// <summary>
-	/// A vector filled with ones.
-	/// </summary>
-	/// <returns></returns>
-	static constexpr vec<l, t> one() requires std::is_arithmetic<t>::value {
-		return allof(t{1});
+		/// <summary>
+		/// A vector filled with ones.
+		/// </summary>
+		/// <returns></returns>
+		static constexpr vec<l, t> one() requires std::is_arithmetic<t>::value{
+			return allof(t{1});
 	}
 
-	/// <summary>
-	/// One minus for each element.
-	/// </summary>
-	/// <returns></returns>
-	constexpr vec<l, t> frac() const requires std::is_arithmetic<t>::value {
-		vec<l, t> result;
-		for (size_t i = 0; i < l; i++) {
-			result[i] = t{ 1 } - e[i];
-		}
-		return result;
+		/// <summary>
+		/// One minus for each element.
+		/// </summary>
+		/// <returns></returns>
+		constexpr vec<l, t> frac() const requires std::is_arithmetic<t>::value{
+			vec<l, t> result;
+			for (size_t i = 0; i < l; i++) {
+				result[i] = t{ 1 } - e[i];
+			}
+			return result;
 	}
-	/// <summary>
-	/// Clamp vector values.
-	/// </summary>
-	/// <param name="min"></param>
-	/// <param name="max"></param>
-	/// <returns></returns>
-	constexpr vec<l, t> clamp(const t& min, const t& max) const {
+		/// <summary>
+		/// Clamp vector values.
+		/// </summary>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
+		/// <returns></returns>
+		constexpr vec<l, t> clamp(const t& min, const t& max) const {
 		vec<l, t> result;
 		for (size_t i = 0; i < l; i++) {
 			result[i] = std::clamp(e[i], min, max);
@@ -210,7 +210,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> ceil() const {
 		vec<l, t> result;
-		for(size_t i = 0; i < l; i++) {
+		for (size_t i = 0; i < l; i++) {
 			result[i] = std::ceil(e[i]);
 		}
 		return result;
@@ -222,30 +222,30 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> sign() const requires std::is_signed_v<t> {
 		vec<l, t> result;
-		for(size_t i = 0; i < l; i++) {
-			result[i] = e[i] & (0b1 << sizeof(t)*8-1) +1 ;
+		for (size_t i = 0; i < l; i++) {
+			result[i] = e[i] & (0b1 << sizeof(t) * 8 - 1) + 1;
 		}
 		return result;
 	}
-    /// <summary>
-    /// Default vector constructor, initializes every element have a value of zero,
-    constexpr vec() {}
-    /// </summary>
+	/// <summary>
+	/// Default vector constructor, initializes every element have a value of zero,
+	constexpr vec() {}
+	/// </summary>
 	/// <summary>
 	/// Constructor for constructing each vector element with a certain value.
 	/// </summary>
 	constexpr vec(t v) {
-        std::fill(e.begin(), e.end(), v);
-    }
-    /// <summary>
-    /// initializes every element of the vactor to any given value corresponding the the vector type
-    /// </summary>
+		std::fill(e.begin(), e.end(), v);
+	}
+	/// <summary>
+	/// initializes every element of the vactor to any given value corresponding the the vector type
+	/// </summary>
 	/// <summary>
 	/// Copy constructor.
 	/// </summary>
 	/// <param name="other"></param>
 	constexpr vec(const vec<l, t>& other) {
-        std::copy(other.e.begin(), other.e.end(), e.begin());
+		std::copy(other.e.begin(), other.e.end(), e.begin());
 	}
 	/// <summary>
 	/// Create vector from a subvector and a number of elements.
@@ -315,7 +315,7 @@ public:
 	/// <returns></returns>
 	template <int l_, typename t_>
 	constexpr vec<l, t>& operator=(vec<l_, t_> const& other) {
-        std::copy(other.e.begin(), other.e.end(), e.begin());
+		std::copy(other.e.begin(), other.e.end(), e.begin());
 		return *this;
 	}
 
@@ -350,27 +350,27 @@ public:
 	// increment operators, increments each value individually. 
 	constexpr vec<l, t> operator++() {
 		vec<l, t> c = *this;
-		for(auto& elem: e) {
-		    elem++;
+		for (auto& elem : e) {
+			elem++;
 		}
 		return c;
 	}
 	constexpr vec<l, t> operator--() {
 		vec<l, t> c = *this;
-		for(auto& elem: e) {
-		    elem--;
+		for (auto& elem : e) {
+			elem--;
 		}
 		return c;
 	}
 
 	constexpr vec<l, t>& operator++(int) {
-		for(auto& elem: e) {
+		for (auto& elem : e) {
 			++elem;
 		}
 		return *this;
 	}
 	constexpr vec<l, t>& operator--(int) {
-		for(auto& elem: e) {
+		for (auto& elem : e) {
 			--elem;
 		}
 		return *this;
@@ -383,10 +383,10 @@ public:
 	/// <param name="time">How far to lerp.</param>
 	/// <returns>A reference to this.</returns>
 	constexpr vec<l, t>& lerp_towards(const vec<l, t>& goal, double percent) {
-        auto iter = goal.e.begin();
-		std::for_each(e.begin(), e.end(), [&](t&elem){
+		auto iter = goal.e.begin();
+		std::for_each(e.begin(), e.end(), [&](t& elem) {
 			elem = std::lerp(elem, *(iter++), percent);
-		});
+			});
 		return *this;
 	}
 
@@ -400,17 +400,17 @@ public:
 		return result;
 	}
 
-    constexpr void reverse() {
-        *this = get_reverse();
-    }
+	constexpr void reverse() {
+		*this = get_reverse();
+	}
 
 	/// <summary>
 	/// The square length of this vector
 	/// </summary>
 	/// <returns></returns>
 	constexpr t length_sqr() const {
-		t r{0};
-		for(const auto& elem: e) {
+		t r{ 0 };
+		for (const auto& elem : e) {
 			r += elem * elem;
 		}
 		return r;
@@ -439,7 +439,7 @@ public:
 	}
 	/// <summary>
 	/// Check if all elements evaluate to a given value. returns true if they do, otherwise false. 
-    /// Has a default parameter of 0.
+	/// Has a default parameter of 0.
 	/// </summary>
 	/// <returns></returns>
 	constexpr bool all(const t value = 0) const {
@@ -450,7 +450,7 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	constexpr bool any() const {
-		return std::find_if(e.begin(), e.end(), [](t v){ return v != 0; }) != e.end();
+		return std::find_if(e.begin(), e.end(), [](t v) { return v != 0; }) != e.end();
 	}
 	/// <summary>
 	/// Check if any element equals the given value.
@@ -475,7 +475,7 @@ public:
 	/// </summary>
 	/// <returns></returns>
 	constexpr t max_e() const {
-        return *std::max_element(e.begin(), e.end());
+		return *std::max_element(e.begin(), e.end());
 	}
 
 	/// <summary>
@@ -484,7 +484,7 @@ public:
 	/// <returns></returns>
 	constexpr t sum() const {
 		t r{ 0 };
-		for (const auto& elem: e) {
+		for (const auto& elem : e) {
 			r += elem;
 		}
 		return r;
@@ -504,7 +504,7 @@ public:
 	/// <returns></returns>
 	constexpr t volume() const {
 		t r{ 1 };
-		for (const auto& elem: e) {
+		for (const auto& elem : e) {
 			r *= elem;
 		}
 		return r;
@@ -562,7 +562,7 @@ public:
 	constexpr operator vec<_l, _t>(void) const {
 		vec<_l, _t> result;
 		constexpr size_t max = l < _l ? l : _l;
-		for(size_t i = 0; i < max; ++i) {
+		for (size_t i = 0; i < max; ++i) {
 			result[i] = static_cast<_t>(e[i]);
 		}
 		return result;
@@ -574,7 +574,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> abs() const {
 		vec<l, t> r;
-		for(size_t i = 0; i < l; ++i) {
+		for (size_t i = 0; i < l; ++i) {
 			r[i] = std::abs(e[i]);
 		}
 		return r;
@@ -587,7 +587,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> vmax(const t& a) const {
 		vec<l, t> r;
-		for(size_t i = 0; i < l; ++i) {
+		for (size_t i = 0; i < l; ++i) {
 			r[i] = std::max(e[i], a);
 		}
 		return r;
@@ -599,7 +599,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> vmax(const vec<l, t>& a) const {
 		vec<l, t> r;
-		for(size_t i = 0; i < l; i++){
+		for (size_t i = 0; i < l; i++) {
 			r[i] = std::max(e[i], a[i]);
 		}
 		return r;
@@ -612,7 +612,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> vmin(const t& a) const {
 		vec<l, t> r;
-		for (size_t i = 0; i < l; i++){
+		for (size_t i = 0; i < l; i++) {
 			r[i] = std::min(e[i], a);
 		}
 		return r;
@@ -624,7 +624,7 @@ public:
 	/// <returns></returns>
 	constexpr vec<l, t> vmin(const vec<l, t>& a) const {
 		vec<l, t> r;
-		for (size_t i = 0; i < l; i++){
+		for (size_t i = 0; i < l; i++) {
 			r[i] = std::min(e[i], a[i]);
 		}
 		return r;
@@ -709,7 +709,7 @@ VECTOR(7);
 template<size_t l, typename t>
 constexpr t dot(const vec<l, t>& a, const vec<l, t>& b) {
 	t result = t{};
-	for (size_t i = 0; i < l; i++){
+	for (size_t i = 0; i < l; i++) {
 		result += a[i] * b[i];
 	}
 	return result;

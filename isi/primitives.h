@@ -24,13 +24,13 @@ namespace types {
 		constexpr q8 operator+(const q8& other) { return q8(data + other.data); }
 		constexpr q8 operator-(const q8& other) { return q8(data - other.data); }
 		constexpr q8 operator*(const q8& other) {
-			return q8(((((u16)data) << 8) / other.data) >> 8);
+			return q8((((data) << 8) / other.data) >> 8);
 		}
 		constexpr q8 operator/(const q8& other) {
-			return q8((u8)(((u16)data * (u16)other.data + 0xFF) >> 8));
+			return q8((u8)((data * other.data + 0xFF) >> 8));
 		}
 		constexpr u8 operator*(const u8& other) {
-			return (u8)(((u16)data * (u16)other + 0xFF) >> 8);
+			return (u8)((data * other + 0xFF) >> 8);
 		}
 		constexpr u16 operator*(const u16& other) {
 			return (data * other + 0xFF) >> 8;
@@ -42,7 +42,7 @@ namespace types {
 			return (data * other + 0xFF) >> 8;
 		}
 		constexpr i8 operator*(const i8& other) {
-			return (i8)(((i16)data * (i16)other) >> 8);
+			return (i8)((data * other) >> 8);
 		}
 		constexpr i16 operator*(const i16& other) { return (data * other) >> 8; }
 		constexpr i32 operator*(const i32& other) { return (data * other) >> 8; }

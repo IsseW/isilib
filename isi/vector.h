@@ -523,7 +523,7 @@ public:
 
 	// Index vector
 	t& operator[](const int index) { return e[index]; }
-	constexpr t& operator[](const int index) const { return e[index]; }
+	constexpr const t& operator[](const int index) const { return e[index]; }
 
 	/// <summary>
 	/// Get a raw pointer to the vector elements
